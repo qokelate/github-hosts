@@ -21,6 +21,11 @@ make_dnsmasq_rule(){
     done
 }
 
+sort_data(){
+    echo "# updated on $now" >github.tmp
+    sort "$1"|uniq >> github.tmp
+    mv -fv github.tmp "$1"
+}
 
 
 cd /tmp
@@ -28,13 +33,14 @@ curl -LRk -o g1.txt 'https://gitlab.com/ineo6/hosts/-/raw/master/next-hosts'
 curl -LRk -o g2.txt 'https://raw.githubusercontent.com/ittuann/GitHub-IP-hosts/refs/heads/main/hosts'
 
 
-echo "# updated on $now" >github.hosts
-make_hosts_rule g1.txt >>github.hosts
-make_hosts_rule g2.txt >>github.hosts
 
-echo "# updated on $now" >github.conf
-make_dnsmasq_rule g1.txt >>github.conf
+make_hosts_rule g1.txt >github.hosts
+make_hosts_rule g2.txt >>github.hosts
+sort_data github.hosts
+
+make_dnsmasq_rule g1.txt >github.conf
 make_dnsmasq_rule g2.txt >>github.conf
+sort_data github.conf
 
 
 rm -f g1.txt g2.txt
