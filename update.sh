@@ -20,6 +20,14 @@ make_dnsmasq_rule(){
     done
 }
 
+make_routeros_rule(){
+    grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' "$1" | while read line; do
+        ip=`echo "$line"|grep -oE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'`
+        host=`echo "$line"|grep -oE '\S+$'`
+        echo "/ip/dns/static/add name=$host address=$ip"
+    done
+}
+
 sort_data(){
     now=`date '+%Y-%m-%d %H:%M:%S'`
     echo "# updated on $now" >github.tmp
@@ -42,9 +50,14 @@ make_dnsmasq_rule g1.txt >github.conf
 make_dnsmasq_rule g2.txt >>github.conf
 sort_data github.conf
 
+make_routeros_rule g1.txt >github.rsc
+make_routeros_rule g2.txt >>github.rsc
+sort_data github.rsc
+
 
 rm -f g1.txt g2.txt
 mv -fv github.conf "$s/"
 mv -fv github.hosts "$s/"
+mv -fv github.rsc "$s/"
 
 exit
