@@ -2,7 +2,6 @@
 
 s=`realpath "$0"`
 s=`dirname "$s"`
-now=`date '+%Y-%m-%d %H:%M:%S'`
 
 make_hosts_rule(){
     grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' "$1" | while read line; do
@@ -22,6 +21,7 @@ make_dnsmasq_rule(){
 }
 
 sort_data(){
+    now=`date '+%Y-%m-%d %H:%M:%S'`
     echo "# updated on $now" >github.tmp
     sort "$1"|uniq >> github.tmp
     mv -fv github.tmp "$1"
